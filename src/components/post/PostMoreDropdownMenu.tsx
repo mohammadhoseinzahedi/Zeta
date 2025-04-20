@@ -114,6 +114,7 @@ const PostMoreDropdownMenu = ({
                         error: false,
                       }));
                     }
+                    router.push("/posts");
                     router.refresh();
                   } catch {
                     alert("Error deleting post. Please try again.");
