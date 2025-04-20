@@ -9,13 +9,24 @@ import UserAvatar from "@/components/user/UserAvatar";
 import PostMoreDropdownMenu from "@/components/post/PostMoreDropdownMenu";
 import { getTextDirection } from "@/lib/utils";
 import { authenticatedUserType } from "@/auth";
+import type { Dispatch, SetStateAction } from "react";
 
 const Post = ({
   authenticatedUser,
   post,
+  setPosts,
+  setStatus,
 }: {
   authenticatedUser: authenticatedUserType;
   post: Post;
+  setPosts?: Dispatch<SetStateAction<Post[]>>;
+  setStatus?: Dispatch<
+    SetStateAction<{
+      page: number;
+      hasMore: boolean;
+      error: boolean;
+    }>
+  >;
 }) => {
   return (
     <div className="space-y-4">
@@ -31,6 +42,8 @@ const Post = ({
           <PostMoreDropdownMenu
             post={post}
             authenticatedUser={authenticatedUser}
+            setPosts={setPosts}
+            setStatus={setStatus}
           />
         </div>
       </div>

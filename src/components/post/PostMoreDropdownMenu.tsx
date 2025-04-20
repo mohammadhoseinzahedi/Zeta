@@ -23,13 +23,24 @@ import { deletePost } from "@/actions/post";
 import { useRouter } from "next/navigation";
 import { canUpdatePost } from "@/permissions/post";
 import { authenticatedUserType } from "@/auth";
+import type { Dispatch, SetStateAction } from "react";
 
 const PostMoreDropdownMenu = ({
   authenticatedUser,
   post,
+  setPosts,
+  setStatus,
 }: {
   authenticatedUser: authenticatedUserType;
   post: Post;
+  setPosts?: Dispatch<SetStateAction<Post[]>>;
+  setStatus?: Dispatch<
+    SetStateAction<{
+      page: number;
+      hasMore: boolean;
+      error: boolean;
+    }>
+  >;
 }) => {
   const router = useRouter();
   const { isFollowing, isPending, toggleFollow, refreshFollowState } =
@@ -94,7 +105,15 @@ const PostMoreDropdownMenu = ({
                 onClick={async () => {
                   try {
                     await deletePost(post.id);
-                    router.push(`/posts`);
+                    if (setPosts && setStatus) {
+                      setPosts([]);
+                      setStatus((prev) => ({
+                        ...prev,
+                        page: 0,
+                        hasMore: true,
+                        error: false,
+                      }));
+                    }
                     router.refresh();
                   } catch {
                     alert("Error deleting post. Please try again.");

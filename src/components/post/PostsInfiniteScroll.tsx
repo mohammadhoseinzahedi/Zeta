@@ -20,6 +20,8 @@ const PostsInfiniteScroll = ({
   const { data: session } = useSession();
   const {
     data: posts,
+    setData: setPosts,
+    setStatus,
     status,
     ref,
   } = useInfiniteScroll<Post, PostLoaderActionProps>(
@@ -30,7 +32,13 @@ const PostsInfiniteScroll = ({
   return (
     <>
       {posts.map((post) => (
-        <Post key={post.id} authenticatedUser={session?.user} post={post} />
+        <Post
+          key={post.id}
+          authenticatedUser={session?.user}
+          post={post}
+          setPosts={setPosts}
+          setStatus={setStatus}
+        />
       ))}
       {status.hasMore && (
         <div ref={ref} className="flex justify-center py-3">
