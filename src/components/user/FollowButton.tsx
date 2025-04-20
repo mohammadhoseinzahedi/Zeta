@@ -2,9 +2,9 @@
 import { Button } from "@/components/ui/button";
 import { LoaderCircle } from "lucide-react";
 import { useFollow } from "@/hooks/useFollow";
-import { User } from "@/db/user";
+import { UserBasic } from "@/db/user";
 
-const FollowButton = ({ user }: { user: User }) => {
+const FollowButton = ({ user }: { user: UserBasic }) => {
   const { isFollowing, isPending, toggleFollow } = useFollow(
     user.username,
     user.isFollowedByAuthenticatedUser

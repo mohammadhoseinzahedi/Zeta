@@ -3,17 +3,17 @@ import { LoaderCircle } from "lucide-react";
 import Link from "next/link";
 import FollowButton from "@/components/user/FollowButton";
 import UserAvatar from "@/components/user/UserAvatar";
-import type { User } from "@/db/user";
+import type { UserBasic } from "@/db/user";
 import useInfiniteScroll from "@/hooks/useInfiniteScroll";
 import { UserLoaderActionProps } from "@/actions/user";
 
 type UsersInfiniteScrollProps = {
   userId?: string;
-  initialUsers: User[];
+  initialUsers: UserBasic[];
   userLoaderAction: (
     page: number,
     { userId }: UserLoaderActionProps
-  ) => Promise<User[]>;
+  ) => Promise<UserBasic[]>;
 };
 
 const UsersInfiniteScroll = ({
@@ -25,7 +25,7 @@ const UsersInfiniteScroll = ({
     data: users,
     status,
     ref,
-  } = useInfiniteScroll<User, UserLoaderActionProps>(
+  } = useInfiniteScroll<UserBasic, UserLoaderActionProps>(
     initialUsers || [],
     userLoaderAction,
     { userId }

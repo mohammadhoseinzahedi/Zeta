@@ -1,6 +1,13 @@
 import { prisma } from "@/prisma";
 import { UserInputDbSchema, UserInputDbType } from "@/schema/user";
 
+export type UserBasic = {
+  username: string;
+  name: string | null;
+  image: string | null;
+  isAuthenticatedUser: boolean;
+  isFollowedByAuthenticatedUser: boolean;
+};
 export type User = NonNullable<Awaited<ReturnType<typeof getUserByUsername>>>;
 
 export async function getUserByUsername(
