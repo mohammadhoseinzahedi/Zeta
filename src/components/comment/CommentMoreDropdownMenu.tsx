@@ -1,9 +1,7 @@
 "use client";
 import { type Comment } from "@/db/comment";
-import Link from "next/link";
 import {
   LoaderCircle,
-  SquarePen,
   UserCheck,
   Trash2,
   UserPlus,

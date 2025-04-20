@@ -1,6 +1,4 @@
 "use client";
-import { useInView } from "react-intersection-observer";
-import { useState, useEffect, use } from "react";
 import { LoaderCircle } from "lucide-react";
 import Link from "next/link";
 import FollowButton from "@/components/user/FollowButton";
