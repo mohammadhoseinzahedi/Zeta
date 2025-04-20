@@ -60,7 +60,6 @@ const PostForm = ({ post }: { post?: Post }) => {
       router.push("/posts");
     } catch {
       alert("Something went wrong, please try again later.");
-    } finally {
       setIsPending(false);
     }
   }

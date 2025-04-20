@@ -95,6 +95,7 @@ const PostMoreDropdownMenu = ({
                   try {
                     await deletePost(post.id);
                     router.push(`/posts`);
+                    router.refresh();
                   } catch {
                     alert("Error deleting post. Please try again.");
                   }
