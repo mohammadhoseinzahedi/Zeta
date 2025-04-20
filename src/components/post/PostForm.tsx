@@ -22,6 +22,7 @@ import { Input } from "../ui/input";
 
 const PostForm = ({ post }: { post?: Post }) => {
   const router = useRouter();
+  const [isPending, setIsPending] = useState(false);
   const [imageLoading, setImageLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
   const form = useForm<PostInputForm>({
@@ -51,6 +52,7 @@ const PostForm = ({ post }: { post?: Post }) => {
     };
 
     try {
+      setIsPending(true);
       const action = post
         ? updatePost(post.id, filteredValues)
         : createPost(filteredValues);
@@ -58,6 +60,8 @@ const PostForm = ({ post }: { post?: Post }) => {
       router.push("/posts");
     } catch {
       alert("Something went wrong, please try again later.");
+    } finally {
+      setIsPending(false);
     }
   }
 
@@ -69,6 +73,7 @@ const PostForm = ({ post }: { post?: Post }) => {
             <div className="flex items-center gap-8 py-2">
               <BackButton />
               <Button
+                disabled={isPending}
                 type="submit"
                 className="rounded-full ms-auto cursor-pointer"
               >

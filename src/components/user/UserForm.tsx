@@ -21,6 +21,7 @@ import { useState } from "react";
 
 const UserForm = ({ user }: { user: User }) => {
   const [imageLoading, setImageLoading] = useState(false);
+  const [isPending, setIsPending] = useState(false);
   const [imageError, setImageError] = useState(false);
   const form = useForm<UserInputFormType>({
     resolver: zodResolver(UserInputFormSchema),
@@ -49,10 +50,13 @@ const UserForm = ({ user }: { user: User }) => {
       image: values.image || null,
     };
     try {
+      setIsPending(true);
       await updateUser(filteredValues, user.username);
       alert("User profile updated successfully.");
     } catch {
       alert("Error updating user profile. Please try again.");
+    } finally {
+      setIsPending(false);
     }
   }
 
@@ -65,6 +69,7 @@ const UserForm = ({ user }: { user: User }) => {
               <BackButton />
               <h1>Edit profile</h1>
               <Button
+                disabled={isPending}
                 type="submit"
                 className="rounded-full ms-auto cursor-pointer"
               >
@@ -132,7 +137,7 @@ const UserForm = ({ user }: { user: User }) => {
               <FormItem>
                 <FormControl>
                   <Input
-                  disabled={imageLoading}
+                    disabled={imageLoading}
                     placeholder="https://example.com/image.jpg"
                     {...field}
                     onChange={(e) => {
