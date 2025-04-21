@@ -18,11 +18,13 @@ import type { User } from "@/db/user";
 import { updateUser } from "@/actions/user";
 import BackButton from "@/components/BackButton";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const UserForm = ({ user }: { user: User }) => {
   const [imageLoading, setImageLoading] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [imageErrorMessage, setImageErrorMessage] = useState("");
   const form = useForm<UserInputFormType>({
     resolver: zodResolver(UserInputFormSchema),
     defaultValues: {
@@ -36,12 +38,12 @@ const UserForm = ({ user }: { user: User }) => {
 
   async function onSubmit(values: UserInputFormType) {
     if (imageLoading) {
-      alert("Please wait for the image to finish loading.");
+      toast.error("Please wait for the image to finish loading.");
       return;
     }
 
     if (imageError) {
-      alert("Please provide a valid image URL.");
+      toast.error(`${imageErrorMessage}. Please try again.`);
       return;
     }
     const filteredValues = {
@@ -49,15 +51,18 @@ const UserForm = ({ user }: { user: User }) => {
       bio: values.bio || null,
       image: values.image || null,
     };
-    try {
-      setIsPending(true);
-      await updateUser(filteredValues, user.username);
-      alert("User profile updated successfully.");
-    } catch {
-      alert("Error updating user profile. Please try again.");
-    } finally {
-      setIsPending(false);
-    }
+
+    setIsPending(true);
+    toast.promise(updateUser(filteredValues, user.username), {
+      loading: "Loading...",
+      success: () => {
+        return "User profile updated successfully.";
+      },
+      error: "Error updating user profile. Please try again.",
+      finally: () => {
+        setIsPending(false);
+      },
+    });
   }
 
   return (
@@ -117,8 +122,10 @@ const UserForm = ({ user }: { user: User }) => {
                 const img = e.target as HTMLImageElement;
                 if (img.naturalWidth > 512 || img.naturalHeight > 512) {
                   setImageError(true);
+                  setImageErrorMessage(
+                    "Image dimensions must not exceed 512x512 pixels"
+                  );
                   setImageLoading(false);
-                  alert("Image dimensions must not exceed 128x128 pixels.");
                 } else {
                   setImageLoading(false);
                   setImageError(false);
@@ -126,6 +133,7 @@ const UserForm = ({ user }: { user: User }) => {
               }}
               onError={() => {
                 setImageError(true);
+                setImageErrorMessage("Invalid image URL");
                 setImageLoading(false);
               }}
             />
@@ -149,9 +157,7 @@ const UserForm = ({ user }: { user: User }) => {
                 </FormControl>
                 <FormDescription>Enter an url for your avatar.</FormDescription>
                 {imageError && (
-                  <p className="text-red-500 text-sm">
-                    Invalid image URL. Please try again.
-                  </p>
+                  <p className="text-red-500 text-sm">{imageErrorMessage}</p>
                 )}
                 <FormMessage />
               </FormItem>
