@@ -54,7 +54,7 @@ const UserForm = ({ user }: { user: User }) => {
 
     setIsPending(true);
     toast.promise(updateUser(filteredValues, user.username), {
-      loading: "Loading...",
+      loading: "Saving...",
       success: () => {
         return "User profile updated successfully.";
       },
