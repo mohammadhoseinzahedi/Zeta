@@ -4,7 +4,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/prisma";
 import bcrypt from "bcryptjs";
-import { signInSchema } from "@/lib/zod";
+import { SignInSchema } from "@/schema/auth";
 import { Role } from "@prisma/client";
 import { cache } from "react";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -53,7 +53,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
       authorize: async (credentials) => {
         try {
-          const { username, password } = await signInSchema.parseAsync(
+          const { username, password } = await SignInSchema.parseAsync(
             credentials
           );
 
