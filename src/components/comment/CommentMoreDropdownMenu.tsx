@@ -1,11 +1,6 @@
 "use client";
 import { type Comment } from "@/db/comment";
-import {
-  LoaderCircle,
-  UserCheck,
-  Trash2,
-  UserPlus,
-} from "lucide-react";
+import { LoaderCircle, UserCheck, Trash2, UserPlus } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,10 +13,10 @@ import { EllipsisVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFollow } from "@/hooks/useFollow";
 import { deleteComment } from "@/actions/comment";
-import { useRouter } from "next/navigation";
 import { canUpdateComment } from "@/permissions/comment";
 import { authenticatedUserType } from "@/auth";
 import type { Dispatch, SetStateAction } from "react";
+import { toast } from "sonner";
 
 const CommentMoreDropdownMenu = ({
   authenticatedUser,
@@ -40,7 +35,6 @@ const CommentMoreDropdownMenu = ({
     }>
   >;
 }) => {
-  const router = useRouter();
   const { isFollowing, isPending, toggleFollow, refreshFollowState } =
     useFollow(comment.author.username, false);
 
@@ -101,21 +95,22 @@ const CommentMoreDropdownMenu = ({
               <button
                 className="w-full flex gap-2 items-center justify-between cursor-pointer"
                 onClick={async () => {
-                  try {
-                    await deleteComment(comment.id);
-                    if (setComments && setStatus) {
-                      setComments([]);
-                      setStatus((prev) => ({
-                        ...prev,
-                        page: 0,
-                        hasMore: true,
-                        error: false,
-                      }));
-                    }
-                    router.refresh();
-                  } catch {
-                    alert("Error deleting comment. Please try again.");
-                  }
+                  toast.promise(deleteComment(comment.id), {
+                    loading: "Deleting comment...",
+                    success: () => {
+                      if (setComments && setStatus) {
+                        setComments([]);
+                        setStatus((prev) => ({
+                          ...prev,
+                          page: 0,
+                          hasMore: true,
+                          error: false,
+                        }));
+                      }
+                      return "Comment deleted successfully.";
+                    },
+                    error: "Error deleting comment. Please try again.",
+                  });
                 }}
               >
                 Delete

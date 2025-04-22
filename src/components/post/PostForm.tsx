@@ -19,6 +19,7 @@ import type { Post } from "@/db/post";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Input } from "../ui/input";
+import { toast } from "sonner";
 
 const PostForm = ({ post }: { post?: Post }) => {
   const router = useRouter();
@@ -51,17 +52,21 @@ const PostForm = ({ post }: { post?: Post }) => {
       image: values.image || null,
     };
 
-    try {
-      setIsPending(true);
-      const action = post
+    setIsPending(true);
+    const action = post
         ? updatePost(post.id, filteredValues)
         : createPost(filteredValues);
-      await action;
-      router.push("/posts");
-    } catch {
-      alert("Something went wrong, please try again later.");
-      setIsPending(false);
-    }
+    toast.promise(action, {
+      loading: "Saving...",
+      success: () => {
+        router.push("/posts");
+        return "Post saved successfully.";
+      },
+      error: "Error saving post. Please try again.",
+      finally: () => {
+        setIsPending(false);
+      },
+    });
   }
 
   return (

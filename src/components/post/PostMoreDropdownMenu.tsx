@@ -20,10 +20,10 @@ import { EllipsisVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFollow } from "@/hooks/useFollow";
 import { deletePost } from "@/actions/post";
-import { useRouter } from "next/navigation";
 import { canUpdatePost } from "@/permissions/post";
 import { authenticatedUserType } from "@/auth";
 import type { Dispatch, SetStateAction } from "react";
+import { toast } from "sonner";
 
 const PostMoreDropdownMenu = ({
   authenticatedUser,
@@ -42,7 +42,6 @@ const PostMoreDropdownMenu = ({
     }>
   >;
 }) => {
-  const router = useRouter();
   const { isFollowing, isPending, toggleFollow, refreshFollowState } =
     useFollow(post.author.username, post.author.isFollowedByAuthenticatedUser);
 
@@ -103,22 +102,22 @@ const PostMoreDropdownMenu = ({
               <button
                 className="w-full flex gap-2 items-center justify-between cursor-pointer"
                 onClick={async () => {
-                  try {
-                    await deletePost(post.id);
-                    if (setPosts && setStatus) {
-                      setPosts([]);
-                      setStatus((prev) => ({
-                        ...prev,
-                        page: 0,
-                        hasMore: true,
-                        error: false,
-                      }));
-                    }
-                    router.push("/posts");
-                    router.refresh();
-                  } catch {
-                    alert("Error deleting post. Please try again.");
-                  }
+                  toast.promise(deletePost(post.id), {
+                    loading: "Deleting post...",
+                    success: () => {
+                      if (setPosts && setStatus) {
+                        setPosts([]);
+                        setStatus((prev) => ({
+                          ...prev,
+                          page: 0,
+                          hasMore: true,
+                          error: false,
+                        }));
+                      }
+                      return "Post deleted successfully.";
+                    },
+                    error: "Error deleting post. Please try again.",
+                  });
                 }}
               >
                 Delete

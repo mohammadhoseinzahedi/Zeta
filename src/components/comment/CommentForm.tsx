@@ -18,6 +18,7 @@ import { createComment } from "@/actions/comment";
 import type { Comment as CommentType } from "@/db/comment";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import { LoaderCircle, Send } from "lucide-react";
+import { toast } from "sonner";
 
 const CommentForm = ({
   postId,
@@ -44,10 +45,10 @@ const CommentForm = ({
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   async function onSubmit(values: CommentInputForm) {
-    try {
-      setIsSubmitting(true);
-      if (!comment) {
-        await createComment(postId, values);
+    setIsSubmitting(true);
+    toast.promise(createComment(postId, values), {
+      loading: "Submitting comment...",
+      success: () => {
         if (setComments && setStatus) {
           setComments([]);
           setStatus((prev) => ({
@@ -58,10 +59,13 @@ const CommentForm = ({
           }));
         }
         form.reset();
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
+        return "Comment submitted successfully.";
+      },
+      error: "Error submitting comment. Please try again.",
+      finally: () => {
+        setIsSubmitting(false);
+      },
+    });
   }
 
   return (
