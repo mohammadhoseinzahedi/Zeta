@@ -14,7 +14,7 @@ const SignInPage = async () => {
           Please enter your credentials to sign in.
         </p>
         <p className="text-sm text-center text-gray-500 mb-4">
-          If you don't have an account, new account will be created with
+          If you dont have an account, new account will be created with
           provided username and password.
         </p>
         <SignInForm />
