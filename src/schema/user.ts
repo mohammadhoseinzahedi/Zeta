@@ -7,11 +7,13 @@ export const UserInputFormSchema = z.object({
 });
 
 export const UserInputDbSchema = z.object({
-  name: z.string().max(32, "Display name must be less than 32 characters").nullable(),
+  name: z
+    .string()
+    .max(32, "Display name must be less than 32 characters")
+    .nullable(),
   bio: z.string().max(128, "Bio must be less than 128 characters").nullable(),
   image: z.string().url("Must be a valid URL").nullable(),
 });
-
 
 export type UserInputFormType = z.infer<typeof UserInputFormSchema>;
 export type UserInputDbType = z.infer<typeof UserInputDbSchema>;

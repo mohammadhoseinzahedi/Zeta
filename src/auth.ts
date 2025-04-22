@@ -1,4 +1,4 @@
-import NextAuth, { type DefaultSession } from "next-auth";
+import NextAuth, { CredentialsSignin, type DefaultSession } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "next-auth/providers/credentials";
@@ -9,6 +9,7 @@ import { Role } from "@prisma/client";
 import { cache } from "react";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { JWT } from "next-auth/jwt";
+import { SIGN_IN_URL } from "./lib/constants";
 
 declare module "next-auth" {
   interface User {
@@ -36,6 +37,9 @@ declare module "next-auth/jwt" {
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  pages: {
+    signIn: SIGN_IN_URL,
+  },
   adapter: PrismaAdapter(prisma) as Adapter,
   secret: process.env.AUTH_SECRET,
   session: {
@@ -79,7 +83,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           if (user.password && (await bcrypt.compare(password, user.password)))
             return user;
 
-          throw new Error("Invalid credentials.");
+          return null;
         } catch {
           return null;
         }
