@@ -6,9 +6,9 @@ import BackButton from "@/components/BackButton";
 import { Suspense } from "react";
 import CommentsInfiniteScroll from "@/components/comment/CommentsInfiniteScroll";
 import { getCommentsByPostId } from "@/db/comment";
-import Loading from "@/app/loading";
 import { LoaderCircle } from "lucide-react";
 import { getAuthenticatedUser } from "@/auth";
+import PostSkeleton from "@/components/post/PostSkeleton";
 
 const Comments = async ({ postId }: { postId: string }) => {
   const comments = await getCommentsByPostId(postId);
@@ -31,7 +31,7 @@ const Wrapper = async ({ params }: { params: Promise<{ id: string }> }) => {
         <BackButton />
         <h1 className="font-semibold">Post</h1>
       </header>
-      <Post authenticatedUser={authenticatedUser} post={post} />
+      <Post post={post} />
       <Suspense
         fallback={
           <div className="h-96">
@@ -47,7 +47,13 @@ const Wrapper = async ({ params }: { params: Promise<{ id: string }> }) => {
 
 const PostPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense
+      fallback={
+        <Container className="py-14 space-y-4">
+          <PostSkeleton />
+        </Container>
+      }
+    >
       <Wrapper params={params} />
     </Suspense>
   );
