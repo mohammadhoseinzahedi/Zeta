@@ -41,13 +41,10 @@ const Post = ({ post }: { post: Post }) => {
         <p className="text-slate-500 text-xs"> • Edited</p>
       )}
       <div className="text-slate-700 text-sm flex items-center gap-6 border-y py-1">
-        <Link
-          className="flex gap-2 items-center"
-          href={`/posts/${post.id}#comments`}
-        >
+        <div className="flex gap-2 items-center">
           <MessageCircle size={20} />
           {post.commentsCount}
-        </Link>
+        </div>
 
         <PostLike post={post} />
         <Button
