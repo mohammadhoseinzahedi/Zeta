@@ -6,6 +6,7 @@ import Container from "@/components/Container";
 import Loading from "@/app/loading";
 import PostsPageTabs from "@/components/post/PostsPageTabs";
 import { redirect } from "next/navigation";
+import PostsSkeleton from "@/components/post/PostsSkeleton";
 
 const UserFollowingsPosts = async () => {
   const authenticatedUser = await getAuthenticatedUser();
@@ -29,12 +30,12 @@ const Posts = async ({
   return (
     <>
       {tab === "all" && (
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<PostsSkeleton />}>
           <AllPosts />
         </Suspense>
       )}
       {tab === "following" && (
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<PostsSkeleton />}>
           <UserFollowingsPosts />
         </Suspense>
       )}
@@ -48,12 +49,10 @@ const PostsPage = ({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) => {
   return (
-    <Suspense fallback={<Loading />}>
-      <Container className="space-y-4">
-        <PostsPageTabs />
-        <Posts searchParams={searchParams} />
-      </Container>
-    </Suspense>
+    <Container className="space-y-4">
+      <PostsPageTabs />
+      <Posts searchParams={searchParams} />
+    </Container>
   );
 };
 
