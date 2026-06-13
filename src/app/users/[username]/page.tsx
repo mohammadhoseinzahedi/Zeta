@@ -10,7 +10,7 @@ import Loading from "@/app/loading";
 import BackButton from "@/components/BackButton";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
-import PostsInfiniteScroll from "@/components/post/PostsInfiniteScroll";
+import Posts from "@/components/post/Posts";
 import { getUserPosts } from "@/db/post";
 import UserPageTabs from "@/components/user/UserPageTabs";
 import CommentsInfiniteScroll from "@/components/comment/CommentsInfiniteScroll";
@@ -18,6 +18,7 @@ import { getCommentsByAuthorId } from "@/db/comment";
 import { cn } from "@/lib/utils";
 import { UserRoundPen } from "lucide-react";
 import { LogOut } from "lucide-react";
+import PostsSkeleton from "@/components/post/PostsSkeleton";
 
 const Header = ({ user: { name, username, _count } }: { user: User }) => {
   return (
@@ -65,7 +66,7 @@ const Buttons = async ({ user }: { user: User }) => {
           href={`/users/${user.username}/edit`}
           className={cn(
             buttonVariants({ variant: "outline" }),
-            "text-xs text-slate-900 rounded-full cursor-pointer min-w-[90px] me-4"
+            "text-xs text-slate-900 rounded-full cursor-pointer min-w-[90px] me-4",
           )}
         >
           <UserRoundPen /> Edit profile
@@ -73,7 +74,7 @@ const Buttons = async ({ user }: { user: User }) => {
         <Link
           className={cn(
             buttonVariants({ variant: "outline" }),
-            "text-xs text-slate-900 rounded-full cursor-pointer min-w-[90px]"
+            "text-xs text-slate-900 rounded-full cursor-pointer min-w-[90px]",
           )}
           href="/api/auth/signout"
         >
@@ -129,17 +130,10 @@ const Comments = async ({ userId }: { userId: string }) => {
   );
 };
 
-const Posts = async ({ userId }: { userId: string }) => {
+const PostsSection = async ({ userId }: { userId: string }) => {
   const authenticatedUser = await getAuthenticatedUser();
   const posts = await getUserPosts(userId, authenticatedUser?.id);
-  return (
-    <PostsInfiniteScroll
-      initialPosts={posts}
-      getBy="author"
-      authorId={userId}
-      hideFollowButton={true}
-    />
-  );
+  return <Posts posts={posts} />;
 };
 
 const Wrapper = async ({
@@ -168,14 +162,8 @@ const Wrapper = async ({
       <UserPageTabs />
       <div className="space-y-4 mt-4">
         {tab === "posts" && (
-          <Suspense
-            fallback={
-              <div className="flex justify-center py-3">
-                <LoaderCircle className="animate-spin" />
-              </div>
-            }
-          >
-            <Posts userId={user.id} />
+          <Suspense fallback={<PostsSkeleton />}>
+            <PostsSection userId={user.id} />
           </Suspense>
         )}
         {tab === "comments" && (

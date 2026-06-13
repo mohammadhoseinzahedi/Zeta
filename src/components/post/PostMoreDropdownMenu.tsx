@@ -21,27 +21,14 @@ import { cn } from "@/lib/utils";
 import { useFollow } from "@/hooks/useFollow";
 import { deletePost } from "@/actions/post";
 import { canUpdatePost } from "@/permissions/post";
-import { authenticatedUserType } from "@/auth";
-import type { Dispatch, SetStateAction } from "react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
-const PostMoreDropdownMenu = ({
-  authenticatedUser,
-  post,
-  setPosts,
-  setStatus,
-}: {
-  authenticatedUser: authenticatedUserType;
-  post: Post;
-  setPosts?: Dispatch<SetStateAction<Post[]>>;
-  setStatus?: Dispatch<
-    SetStateAction<{
-      page: number;
-      hasMore: boolean;
-      error: boolean;
-    }>
-  >;
-}) => {
+const PostMoreDropdownMenu = ({ post }: { post: Post }) => {
+  const { data: session } = useSession();
+  const authenticatedUser = session?.user;
+  const router = useRouter();
   const { isFollowing, isPending, toggleFollow, refreshFollowState } =
     useFollow(post.author.username, post.author.isFollowedByAuthenticatedUser);
 
@@ -105,15 +92,7 @@ const PostMoreDropdownMenu = ({
                   toast.promise(deletePost(post.id), {
                     loading: "Deleting post...",
                     success: () => {
-                      if (setPosts && setStatus) {
-                        setPosts([]);
-                        setStatus((prev) => ({
-                          ...prev,
-                          page: 0,
-                          hasMore: true,
-                          error: false,
-                        }));
-                      }
+                      router.push("/posts");
                       return "Post deleted successfully.";
                     },
                     error: "Error deleting post. Please try again.",

@@ -8,26 +8,8 @@ import { Button } from "@/components/ui/button";
 import UserAvatar from "@/components/user/UserAvatar";
 import PostMoreDropdownMenu from "@/components/post/PostMoreDropdownMenu";
 import { getTextDirection } from "@/lib/utils";
-import { authenticatedUserType } from "@/auth";
-import type { Dispatch, SetStateAction } from "react";
 
-const Post = ({
-  authenticatedUser,
-  post,
-  setPosts,
-  setStatus,
-}: {
-  authenticatedUser: authenticatedUserType;
-  post: Post;
-  setPosts?: Dispatch<SetStateAction<Post[]>>;
-  setStatus?: Dispatch<
-    SetStateAction<{
-      page: number;
-      hasMore: boolean;
-      error: boolean;
-    }>
-  >;
-}) => {
+const Post = ({ post }: { post: Post }) => {
   return (
     <div className="space-y-4">
       <div className="flex gap-2 items-center">
@@ -39,12 +21,7 @@ const Post = ({
           <h2 className="text-slate-900">@{post.author.username}</h2>
         </Link>
         <div className="ms-auto">
-          <PostMoreDropdownMenu
-            post={post}
-            authenticatedUser={authenticatedUser}
-            setPosts={setPosts}
-            setStatus={setStatus}
-          />
+          <PostMoreDropdownMenu post={post} />
         </div>
       </div>
       <Link className="block space-y-4" href={`/posts/${post.id}`}>

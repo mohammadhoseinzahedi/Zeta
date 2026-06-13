@@ -19,11 +19,9 @@ export type Post = {
   commentsCount: number;
 };
 
-const postsPerPage = 20;
-
 export async function getPost(
   postId: string,
-  authenticatedUserId?: string
+  authenticatedUserId?: string,
 ): Promise<Post | null> {
   const post = await prisma.post.findUnique({
     where: { id: postId },
@@ -89,16 +87,8 @@ export async function getPost(
   );
 }
 
-export async function getPosts(
-  authenticatedUserId?: string,
-  page: number = 1,
-  limit: number = postsPerPage
-): Promise<Post[]> {
-  const take = limit;
-  const skip = take * (page - 1);
+export async function getPosts(authenticatedUserId?: string): Promise<Post[]> {
   const posts = await prisma.post.findMany({
-    skip,
-    take,
     where: {},
     select: {
       id: true,
@@ -163,14 +153,8 @@ export async function getPosts(
 export async function getUserPosts(
   authorId: string,
   authenticatedUserId?: string,
-  page: number = 1,
-  limit: number = postsPerPage
 ): Promise<Post[]> {
-  const take = limit;
-  const skip = take * (page - 1);
   const posts = await prisma.post.findMany({
-    skip,
-    take,
     where: { authorId },
     select: {
       id: true,
@@ -235,14 +219,8 @@ export async function getUserPosts(
 
 export async function getUserFollowingsPosts(
   authenticatedUserId?: string,
-  page: number = 1,
-  limit: number = postsPerPage
 ): Promise<Post[]> {
-  const take = limit;
-  const skip = take * (page - 1);
   const posts = await prisma.post.findMany({
-    skip,
-    take,
     where: { author: { followedBy: { some: { id: authenticatedUserId } } } },
     select: {
       id: true,
@@ -307,7 +285,7 @@ export async function getUserFollowingsPosts(
 
 export async function createPost(
   username: string,
-  unSafeData: PostInputDb
+  unSafeData: PostInputDb,
 ): Promise<void> {
   const data = await PostInputDbSchema.parseAsync(unSafeData);
   await prisma.post.create({
@@ -324,7 +302,7 @@ export async function createPost(
 
 export async function updatePost(
   id: string,
-  unSafeData: PostInputDb
+  unSafeData: PostInputDb,
 ): Promise<void> {
   const data = await PostInputDbSchema.parseAsync(unSafeData);
   await prisma.post.update({
@@ -341,7 +319,7 @@ export async function deletePost(postId: string) {
 
 export async function likePost(
   username: string,
-  postId: string
+  postId: string,
 ): Promise<void> {
   await prisma.post.update({
     where: { id: postId },
@@ -357,7 +335,7 @@ export async function likePost(
 
 export async function unLikePost(
   username: string,
-  postId: string
+  postId: string,
 ): Promise<void> {
   await prisma.post.update({
     where: { id: postId },
@@ -373,7 +351,7 @@ export async function unLikePost(
 
 export async function isLikedPost(
   id: string,
-  username: string
+  username: string,
 ): Promise<boolean> {
   const user = await prisma.user.findUnique({
     where: { username },

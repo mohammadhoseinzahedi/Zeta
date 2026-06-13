@@ -1,9 +1,8 @@
 import { getPosts, getUserFollowingsPosts } from "@/db/post";
 import { Suspense } from "react";
-import PostsInfiniteScroll from "@/components/post/PostsInfiniteScroll";
+import Posts from "@/components/post/Posts";
 import { getAuthenticatedUser } from "@/auth";
 import Container from "@/components/Container";
-import Loading from "@/app/loading";
 import PostsPageTabs from "@/components/post/PostsPageTabs";
 import { redirect } from "next/navigation";
 import PostsSkeleton from "@/components/post/PostsSkeleton";
@@ -12,16 +11,16 @@ const UserFollowingsPosts = async () => {
   const authenticatedUser = await getAuthenticatedUser();
   if (!authenticatedUser) redirect("/api/auth/signin");
   const posts = await getUserFollowingsPosts(authenticatedUser?.id);
-  return <PostsInfiniteScroll initialPosts={posts} getBy="following" />;
+  return <Posts posts={posts} />;
 };
 
 const AllPosts = async () => {
   const authenticatedUser = await getAuthenticatedUser();
   const posts = await getPosts(authenticatedUser?.id);
-  return <PostsInfiniteScroll initialPosts={posts} />;
+  return <Posts posts={posts} />;
 };
 
-const Posts = async ({
+const PostsTabs = async ({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -51,7 +50,7 @@ const PostsPage = ({
   return (
     <Container className="space-y-4">
       <PostsPageTabs />
-      <Posts searchParams={searchParams} />
+      <PostsTabs searchParams={searchParams} />
     </Container>
   );
 };
