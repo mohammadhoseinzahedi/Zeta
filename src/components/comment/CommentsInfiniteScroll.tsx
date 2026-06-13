@@ -79,7 +79,7 @@ const CommentsInfiniteScroll = ({
           {status.error ? (
             <p className="text-sm">Loading comments failed ...</p>
           ) : (
-            <div className="h-96">
+            <div>
               <LoaderCircle className="animate-spin" />
             </div>
           )}
