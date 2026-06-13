@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useSearchParams } from "next/navigation";
+import { LoaderIcon } from "lucide-react";
 
 const SignInForm = () => {
   const searchParams = useSearchParams();
@@ -43,7 +44,11 @@ const SignInForm = () => {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input className="rounded-full" placeholder="Username" {...field} />
+                <Input
+                  className="rounded-full"
+                  placeholder="Username"
+                  {...field}
+                />
               </FormControl>
               <FormMessage className="text-xs" />
             </FormItem>
@@ -55,7 +60,12 @@ const SignInForm = () => {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input className="rounded-full" type="password" placeholder="Password" {...field} />
+                <Input
+                  className="rounded-full"
+                  type="password"
+                  placeholder="Password"
+                  {...field}
+                />
               </FormControl>
               <FormMessage className="text-xs" />
             </FormItem>
@@ -66,9 +76,16 @@ const SignInForm = () => {
           disabled={form.formState.isSubmitting}
           type="submit"
           className="cursor-pointer rounded-full w-full"
-          variant='default'
+          variant="default"
         >
-          Sign In
+          {form.formState.isSubmitting ? (
+            <>
+              Signing in
+              <LoaderIcon className="animate-spin" />
+            </>
+          ) : (
+            <>Sign In</>
+          )}
         </Button>
       </form>
     </Form>
