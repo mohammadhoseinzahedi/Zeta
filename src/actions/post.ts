@@ -8,9 +8,6 @@ import {
   likePost as likePostDb,
   unLikePost as unLikePostDb,
   getPost,
-  getPosts,
-  getUserPosts,
-  getUserFollowingsPosts,
 } from "@/db/post";
 import { notFound, redirect, unauthorized } from "next/navigation";
 import { canUpdatePost } from "@/permissions/post";
@@ -19,26 +16,6 @@ export type PostLoaderActionProps = {
   authorId?: string;
   getBy?: "following" | "author";
 };
-
-export async function loadMorePosts(
-  page: number,
-  { authorId, getBy }: PostLoaderActionProps
-) {
-  const authenticatedUser = await getAuthenticatedUser();
-  if (page < 1) page = 1;
-
-  switch (getBy) {
-    case "author":
-      if (!authorId) throw new Error("Author ID is required");
-      return await getUserPosts(authorId, authenticatedUser?.id, page);
-
-    case "following":
-      return await getUserFollowingsPosts(authenticatedUser?.id, page);
-
-    default:
-      return await getPosts(authenticatedUser?.id, page);
-  }
-}
 
 export async function createPost(unSafeData: PostInputDb) {
   const authenticatedUser = await getAuthenticatedUser();
