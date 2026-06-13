@@ -43,9 +43,9 @@ const SignInForm = () => {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input placeholder="Username" {...field} />
+                <Input className="rounded-full" placeholder="Username" {...field} />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-xs" />
             </FormItem>
           )}
         />
@@ -55,16 +55,18 @@ const SignInForm = () => {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input type="password" placeholder="Password" {...field} />
+                <Input className="rounded-full" type="password" placeholder="Password" {...field} />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-xs" />
             </FormItem>
           )}
         />
+
         <Button
           disabled={form.formState.isSubmitting}
           type="submit"
-          className="cursor-pointer rounded-full min-w-24"
+          className="cursor-pointer rounded-full w-full"
+          variant='default'
         >
           Sign In
         </Button>
