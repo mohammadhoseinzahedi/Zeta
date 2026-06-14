@@ -9,7 +9,7 @@ import PostsSkeleton from "@/components/post/PostsSkeleton";
 
 const UserFollowingsPosts = async () => {
   const authenticatedUser = await getAuthenticatedUser();
-  if (!authenticatedUser) redirect("/api/auth/signin");
+  if (!authenticatedUser) redirect("/signin");
   const posts = await getUserFollowingsPosts(authenticatedUser?.id);
   return <Posts posts={posts} />;
 };
