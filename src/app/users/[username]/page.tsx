@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { CalendarDays, LoaderCircle } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getUserByUsername, type User } from "@/db/user";
-import { getAuthenticatedUser } from "@/auth";
+import { getAuthenticatedUser } from "@/lib/auth";
 import FollowButton from "@/components/user/FollowButton";
 import Loading from "@/app/loading";
 import BackButton from "@/components/BackButton";

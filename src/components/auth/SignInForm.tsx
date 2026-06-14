@@ -1,5 +1,5 @@
 "use client";
-import { signIn } from "next-auth/react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignInSchema, type SignIn } from "@/schema/auth";
 import { useForm } from "react-hook-form";
@@ -12,11 +12,12 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { LoaderIcon } from "lucide-react";
 
 const SignInForm = () => {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const error = searchParams.get("error");
   const errorMessage =
     error === "CredentialsSignin" ? "Invalid username or password" : error;
@@ -29,7 +30,19 @@ const SignInForm = () => {
   });
 
   async function onSubmit(values: SignIn) {
-    await signIn("credentials", values);
+    const res = await fetch("/api/auth/signin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    });
+
+    if (res.ok) {
+      router.push("/posts");
+      router.refresh();
+    } else {
+      const errorData = await res.json();
+      alert(errorData.error || "Login failed!");
+    }
   }
 
   return (

@@ -1,7 +1,7 @@
 import { getPosts, getUserFollowingsPosts } from "@/db/post";
 import { Suspense } from "react";
 import Posts from "@/components/post/Posts";
-import { getAuthenticatedUser } from "@/auth";
+import { getAuthenticatedUser } from "@/lib/auth";
 import Container from "@/components/Container";
 import PostsPageTabs from "@/components/post/PostsPageTabs";
 import { redirect } from "next/navigation";

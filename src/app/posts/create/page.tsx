@@ -1,4 +1,4 @@
-import { getAuthenticatedUser } from "@/auth";
+import { getAuthenticatedUser } from "@/lib/auth";
 import PostForm from "@/components/post/PostForm";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";

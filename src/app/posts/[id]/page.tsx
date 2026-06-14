@@ -7,7 +7,7 @@ import { Suspense } from "react";
 import CommentsInfiniteScroll from "@/components/comment/CommentsInfiniteScroll";
 import { getCommentsByPostId } from "@/db/comment";
 import { LoaderCircle } from "lucide-react";
-import { getAuthenticatedUser } from "@/auth";
+import { getAuthenticatedUser } from "@/lib/auth";
 import PostSkeleton from "@/components/post/PostSkeleton";
 
 const Comments = async ({ postId }: { postId: string }) => {

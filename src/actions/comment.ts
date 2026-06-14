@@ -1,5 +1,5 @@
 "use server";
-import { getAuthenticatedUser } from "@/auth";
+import { getAuthenticatedUser } from "@/lib/auth";
 import {
   getComment,
   getCommentsByAuthorId,
@@ -41,7 +41,7 @@ export async function createComment(
   unSafeData: CommentInputDb
 ) {
   const authenticatedUser = await getAuthenticatedUser();
-  if (!authenticatedUser) redirect("/api/auth/signin");
+  if (!authenticatedUser) redirect("/signin");
   return await createCommentDb(authenticatedUser.username, postId, unSafeData);
 }
 

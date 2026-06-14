@@ -7,8 +7,8 @@ import {
 import type { Comment as CommentType } from "@/db/comment";
 import Comment from "@/components/comment/Comment";
 import CommentForm from "@/components/comment/CommentForm";
-import { useSession } from "next-auth/react";
 import useInfiniteScroll from "@/hooks/useInfiniteScroll";
+import { useAuth } from "@/context/AuthContext";
 
 type CommonProps = {
   initialComments?: CommentType[];
@@ -34,7 +34,7 @@ const CommentsInfiniteScroll = ({
   postId,
   authorId,
 }: CommentsInfiniteScrollProps) => {
-  const { data: session } = useSession();
+  const { user } = useAuth();
   const {
     data: comments,
     status,
@@ -44,7 +44,7 @@ const CommentsInfiniteScroll = ({
   } = useInfiniteScroll<CommentType, CommentLoaderActionProps>(
     initialComments || [],
     loadMoreComments,
-    { postId, authorId, getBy }
+    { postId, authorId, getBy },
   );
 
   return (
@@ -67,7 +67,7 @@ const CommentsInfiniteScroll = ({
       {comments.map((comment) => (
         <Comment
           key={comment.id}
-          authenticatedUser={session?.user}
+          authenticatedUser={user}
           comment={comment}
           getBy={getBy}
           setComments={setComments}

@@ -23,11 +23,11 @@ import { deletePost } from "@/actions/post";
 import { canUpdatePost } from "@/permissions/post";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/context/AuthContext";
 
 const PostMoreDropdownMenu = ({ post }: { post: Post }) => {
-  const { data: session } = useSession();
-  const authenticatedUser = session?.user;
+  const { user } = useAuth();
+  const authenticatedUser = user;
   const router = useRouter();
   const { isFollowing, isPending, toggleFollow, refreshFollowState } =
     useFollow(post.author.username, post.author.isFollowedByAuthenticatedUser);

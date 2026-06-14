@@ -1,5 +1,5 @@
 import { PostInputDbSchema, PostInputDb } from "@/schema/post";
-import { prisma } from "@/prisma";
+import { prisma } from "@/lib/prisma";
 
 export type Post = {
   id: string;

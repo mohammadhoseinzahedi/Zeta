@@ -1,5 +1,5 @@
 import Loading from "@/app/loading";
-import { getAuthenticatedUser } from "@/auth";
+import { getAuthenticatedUser } from "@/lib/auth";
 import PostForm from "@/components/post/PostForm";
 import { getPost } from "@/db/post";
 import { canUpdatePost } from "@/permissions/post";

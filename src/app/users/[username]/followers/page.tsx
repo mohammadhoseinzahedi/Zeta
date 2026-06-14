@@ -1,6 +1,6 @@
 import { loadMoreUserFollowers } from "@/actions/user";
 import Loading from "@/app/loading";
-import { getAuthenticatedUser } from "@/auth";
+import { getAuthenticatedUser } from "@/lib/auth";
 import Container from "@/components/Container";
 import UsersInfiniteScroll from "@/components/user/UsersInfiniteScroll";
 import { getUserFollowers, getUserIdByUsername } from "@/db/user";

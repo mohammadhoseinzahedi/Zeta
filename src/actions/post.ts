@@ -1,5 +1,5 @@
 "use server";
-import { getAuthenticatedUser } from "@/auth";
+import { getAuthenticatedUser } from "@/lib/auth";
 import type { PostInputDb } from "@/schema/post";
 import {
   createPost as createPostDb,
@@ -46,12 +46,12 @@ export async function deletePost(postId: string) {
 
 export async function likePost(postId: string) {
   const authenticatedUser = await getAuthenticatedUser();
-  if (!authenticatedUser) redirect("/api/auth/signin");
+  if (!authenticatedUser) redirect("/signin");
   await likePostDb(authenticatedUser.username, postId);
 }
 
 export async function unLikePost(postId: string) {
   const authenticatedUser = await getAuthenticatedUser();
-  if (!authenticatedUser) redirect("/api/auth/signin");
+  if (!authenticatedUser) redirect("/signin");
   await unLikePostDb(authenticatedUser.username, postId);
 }

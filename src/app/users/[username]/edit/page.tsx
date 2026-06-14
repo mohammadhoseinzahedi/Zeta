@@ -1,5 +1,5 @@
 import Loading from "@/app/loading";
-import { getAuthenticatedUser } from "@/auth";
+import { getAuthenticatedUser } from "@/lib/auth";
 import UserForm from "@/components/user/UserForm";
 import { getUserByUsername } from "@/db/user";
 import { canUpdateUser } from "@/permissions/user";

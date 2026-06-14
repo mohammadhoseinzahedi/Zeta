@@ -1,5 +1,5 @@
 import { CommentInputDbSchema, CommentInputDb } from "@/schema/comment";
-import { prisma } from "@/prisma";
+import { prisma } from "@/lib/prisma";
 
 export type Comment = {
   id: string;

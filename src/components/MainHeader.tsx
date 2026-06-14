@@ -1,4 +1,3 @@
-import { getAuthenticatedUser } from "@/auth";
 import Container from "@/components/Container";
 import React from "react";
 import Link from "next/link";
@@ -8,28 +7,23 @@ import { House } from "lucide-react";
 import { Pencil } from "lucide-react";
 import { getUserByUsername } from "@/db/user";
 import UserAvatar from "./user/UserAvatar";
+import { getAuthenticatedUser } from "@/lib/auth";
 
 const MainHeader = async () => {
   const authenticatedUser = await getAuthenticatedUser();
-  const user =
-    authenticatedUser &&
-    (await getUserByUsername(
-      authenticatedUser?.username,
-      authenticatedUser?.id
-    ));
   return (
     <header className="bg-white shadow-sm sticky top-0 z-10">
       <Container className="py-3 flex gap-2 items-center justify-between">
-        {user ? (
+        {authenticatedUser ? (
           <Link
-            href={`/users/${user.username}`}
+            href={`/users/${authenticatedUser.username}`}
             className="flex gap-2 items-center"
           >
-            <UserAvatar user={user} />
+            <UserAvatar user={authenticatedUser} />
           </Link>
         ) : (
           <Link
-            href={`/api/auth/signin`}
+            href={`/signin`}
             className="flex gap-2 items-center text-slate-900 text-sm"
           >
             <LogIn /> Signin
