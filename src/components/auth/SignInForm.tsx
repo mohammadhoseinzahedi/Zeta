@@ -14,8 +14,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LoaderIcon } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 const SignInForm = () => {
+  const { fetchUser } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
   const error = searchParams.get("error");
@@ -37,6 +39,7 @@ const SignInForm = () => {
     });
 
     if (res.ok) {
+      fetchUser();
       router.push("/posts");
       router.refresh();
     } else {
