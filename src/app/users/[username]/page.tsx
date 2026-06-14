@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { UserRoundPen } from "lucide-react";
 import { LogOut } from "lucide-react";
 import PostsSkeleton from "@/components/post/PostsSkeleton";
+import SignoutButton from "@/components/user/SignoutButton";
 
 const Header = ({ user: { name, username, _count } }: { user: User }) => {
   return (
@@ -50,7 +51,7 @@ const Buttons = async ({ user }: { user: User }) => {
   if (!authenticatedUser) {
     return (
       <Link
-        href={`/api/auth/signin`}
+        href={`/signin`}
         className={`${buttonVariants({
           variant: "default",
         })} rounded-full cursor-pointer`}
@@ -71,15 +72,7 @@ const Buttons = async ({ user }: { user: User }) => {
         >
           <UserRoundPen /> Edit profile
         </Link>
-        <Link
-          className={cn(
-            buttonVariants({ variant: "outline" }),
-            "text-xs text-slate-900 rounded-full cursor-pointer min-w-[90px]",
-          )}
-          href="/api/auth/signout"
-        >
-          <LogOut /> Signout
-        </Link>
+        <SignoutButton />
       </>
     );
   }
