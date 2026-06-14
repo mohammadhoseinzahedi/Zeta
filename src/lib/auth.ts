@@ -1,3 +1,5 @@
+import "server-only";
+
 import { Role } from "@prisma/client";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
@@ -53,7 +55,6 @@ export async function getAuthenticatedUser(): Promise<AuthenticatedUser | null> 
       image: payload.image,
     };
   } catch (error) {
-    // Fail silently and return null if token is malformed, expired, or cookies aren't accessible
     console.error("Authentication extraction failed:", error);
     return null;
   }
