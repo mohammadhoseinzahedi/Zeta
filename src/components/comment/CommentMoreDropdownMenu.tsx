@@ -14,9 +14,9 @@ import { cn } from "@/lib/utils";
 import { useFollow } from "@/hooks/useFollow";
 import { deleteComment } from "@/actions/comment";
 import { canUpdateComment } from "@/permissions/comment";
-import { authenticatedUserType } from "@/auth";
 import type { Dispatch, SetStateAction } from "react";
 import { toast } from "sonner";
+import { AuthenticatedUser } from "@/lib/auth";
 
 const CommentMoreDropdownMenu = ({
   authenticatedUser,
@@ -24,7 +24,7 @@ const CommentMoreDropdownMenu = ({
   setComments,
   setStatus,
 }: {
-  authenticatedUser: authenticatedUserType;
+  authenticatedUser: AuthenticatedUser | null;
   comment: Comment;
   setComments?: Dispatch<SetStateAction<Comment[]>>;
   setStatus?: Dispatch<

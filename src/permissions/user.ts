@@ -1,8 +1,8 @@
-import { authenticatedUserType } from "@/auth";
+import { AuthenticatedUser } from "@/lib/auth";
 
 export function canUpdateUser(
-  authenticatedUser: NonNullable<authenticatedUserType>,
-  username: string
+  authenticatedUser: AuthenticatedUser,
+  username: string,
 ) {
   return (
     username === authenticatedUser.username ||

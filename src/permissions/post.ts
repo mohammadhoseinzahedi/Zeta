@@ -1,8 +1,8 @@
-import { authenticatedUserType } from "@/auth";
 import { Post } from "@/db/post";
+import { AuthenticatedUser } from "@/lib/auth";
 
 export function canUpdatePost(
-  authenticatedUser: authenticatedUserType,
+  authenticatedUser: AuthenticatedUser | null,
   post: Post
 ) {
   return (

@@ -5,8 +5,8 @@ import type { Comment } from "@/db/comment";
 import UserAvatar from "@/components/user/UserAvatar";
 import { getTextDirection } from "@/lib/utils";
 import CommentMoreDropdownMenu from "./CommentMoreDropdownMenu";
-import { authenticatedUserType } from "@/auth";
 import type { Dispatch, SetStateAction } from "react";
+import { AuthenticatedUser } from "@/lib/auth";
 
 const Comment = ({
   comment,
@@ -17,7 +17,7 @@ const Comment = ({
 }: {
   comment: Comment;
   getBy?: "post" | "author";
-  authenticatedUser: authenticatedUserType;
+  authenticatedUser: AuthenticatedUser | null;
   setComments?: Dispatch<SetStateAction<Comment[]>>;
   setStatus?: Dispatch<
     SetStateAction<{

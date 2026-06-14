@@ -1,9 +1,9 @@
-import { authenticatedUserType } from "@/auth";
 import type { Comment } from "@/db/comment";
+import { AuthenticatedUser } from "@/lib/auth";
 
 export function canUpdateComment(
-  authenticatedUser: authenticatedUserType,
-  comment: Comment
+  authenticatedUser: AuthenticatedUser | null,
+  comment: Comment,
 ) {
   if (!authenticatedUser) return false;
   if (["OWNER"].includes(authenticatedUser.role)) return true;
