@@ -10,8 +10,6 @@ async function generateAuthToken(user: User) {
     id: user.id,
     username: user.username,
     role: user.role,
-    image: user.image,
-    name: user.name,
   });
 }
 

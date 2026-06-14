@@ -8,8 +8,6 @@ export type AuthenticatedUser = {
   id: string;
   username: string;
   role: Role;
-  name: string | null;
-  image: string | null;
 };
 
 const SECRET = new TextEncoder().encode(process.env.AUTH_SECRET);
@@ -51,8 +49,6 @@ export async function getAuthenticatedUser(): Promise<AuthenticatedUser | null> 
       id: payload.id,
       username: payload.username,
       role: payload.role,
-      name: payload.name,
-      image: payload.image,
     };
   } catch (error) {
     console.error("Authentication extraction failed:", error);

@@ -1,5 +1,4 @@
 import Container from "@/components/Container";
-import React from "react";
 import Link from "next/link";
 import { LogIn } from "lucide-react";
 import { Button } from "./ui/button";
@@ -11,15 +10,21 @@ import { getAuthenticatedUser } from "@/lib/auth";
 
 const MainHeader = async () => {
   const authenticatedUser = await getAuthenticatedUser();
+  const user =
+    authenticatedUser &&
+    (await getUserByUsername(
+      authenticatedUser?.username,
+      authenticatedUser?.id,
+    ));
   return (
     <header className="bg-white shadow-sm sticky top-0 z-10">
       <Container className="py-3 flex gap-2 items-center justify-between">
-        {authenticatedUser ? (
+        {user ? (
           <Link
-            href={`/users/${authenticatedUser.username}`}
+            href={`/users/${user.username}`}
             className="flex gap-2 items-center"
           >
-            <UserAvatar user={authenticatedUser} />
+            <UserAvatar user={user} />
           </Link>
         ) : (
           <Link
