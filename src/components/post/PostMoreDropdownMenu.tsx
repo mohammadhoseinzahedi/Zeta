@@ -20,10 +20,10 @@ import { EllipsisVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFollow } from "@/hooks/useFollow";
 import { deletePost } from "@/actions/post";
-import { canUpdatePost } from "@/permissions/post";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
+import { canCUD } from "@/modules/auth/lib/permissions";
+import { useAuth } from "@/modules/auth/hooks/useAuth";
 
 const PostMoreDropdownMenu = ({ post }: { post: Post }) => {
   const { user } = useAuth();
@@ -74,7 +74,7 @@ const PostMoreDropdownMenu = ({ post }: { post: Post }) => {
             </DropdownMenuItem>
           </>
         )}
-        {canUpdatePost(authenticatedUser, post) && (
+        {canCUD(post.author.username, authenticatedUser) && (
           <>
             <DropdownMenuItem>
               <Link

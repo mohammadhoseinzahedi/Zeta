@@ -13,10 +13,10 @@ import { EllipsisVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFollow } from "@/hooks/useFollow";
 import { deleteComment } from "@/actions/comment";
-import { canUpdateComment } from "@/permissions/comment";
 import type { Dispatch, SetStateAction } from "react";
 import { toast } from "sonner";
-import { AuthenticatedUser } from "@/lib/auth";
+import { SessionPayload } from "@/modules/auth/lib/session";
+import { canCUD } from "@/modules/auth/lib/permissions";
 
 const CommentMoreDropdownMenu = ({
   authenticatedUser,
@@ -24,7 +24,7 @@ const CommentMoreDropdownMenu = ({
   setComments,
   setStatus,
 }: {
-  authenticatedUser: AuthenticatedUser | null;
+  authenticatedUser: SessionPayload | null;
   comment: Comment;
   setComments?: Dispatch<SetStateAction<Comment[]>>;
   setStatus?: Dispatch<
@@ -80,7 +80,7 @@ const CommentMoreDropdownMenu = ({
             </DropdownMenuItem>
           </>
         )}
-        {canUpdateComment(authenticatedUser, comment) && (
+        {canCUD(comment.author.username, authenticatedUser) && (
           <>
             {/* <DropdownMenuItem>
               <Link

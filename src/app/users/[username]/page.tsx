@@ -4,7 +4,6 @@ import { Suspense } from "react";
 import { CalendarDays, LoaderCircle } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getUserByUsername, type User } from "@/db/user";
-import { getAuthenticatedUser } from "@/lib/auth";
 import FollowButton from "@/components/user/FollowButton";
 import Loading from "@/app/loading";
 import BackButton from "@/components/BackButton";
@@ -20,6 +19,7 @@ import { UserRoundPen } from "lucide-react";
 import { LogOut } from "lucide-react";
 import PostsSkeleton from "@/components/post/PostsSkeleton";
 import SignoutButton from "@/components/user/SignoutButton";
+import { verifySession } from "@/modules/auth/lib/session";
 
 const Header = ({ user: { name, username, _count } }: { user: User }) => {
   return (
@@ -47,7 +47,7 @@ const HeroSection = ({ user: { username, image } }: { user: User }) => {
 };
 
 const Buttons = async ({ user }: { user: User }) => {
-  const authenticatedUser = await getAuthenticatedUser();
+  const authenticatedUser = await verifySession();
   if (!authenticatedUser) {
     return (
       <Link
@@ -124,7 +124,7 @@ const Comments = async ({ userId }: { userId: string }) => {
 };
 
 const PostsSection = async ({ userId }: { userId: string }) => {
-  const authenticatedUser = await getAuthenticatedUser();
+  const authenticatedUser = await verifySession();
   const posts = await getUserPosts(userId, authenticatedUser?.id);
   return <Posts posts={posts} />;
 };
@@ -137,7 +137,7 @@ const Wrapper = async ({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) => {
   const { username } = await params;
-  const authenticatedUser = await getAuthenticatedUser();
+  const authenticatedUser = await verifySession();
   const user = await getUserByUsername(username, authenticatedUser?.id);
   if (!user) notFound();
   const { tab = "posts" } = await searchParams;

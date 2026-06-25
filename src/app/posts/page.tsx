@@ -1,21 +1,21 @@
 import { getPosts, getUserFollowingsPosts } from "@/db/post";
 import { Suspense } from "react";
 import Posts from "@/components/post/Posts";
-import { getAuthenticatedUser } from "@/lib/auth";
 import Container from "@/components/Container";
 import PostsPageTabs from "@/components/post/PostsPageTabs";
 import { redirect } from "next/navigation";
 import PostsSkeleton from "@/components/post/PostsSkeleton";
+import { verifySession } from "@/modules/auth/lib/session";
 
 const UserFollowingsPosts = async () => {
-  const authenticatedUser = await getAuthenticatedUser();
+  const authenticatedUser = await verifySession();
   if (!authenticatedUser) redirect("/signin");
   const posts = await getUserFollowingsPosts(authenticatedUser?.id);
   return <Posts posts={posts} />;
 };
 
 const AllPosts = async () => {
-  const authenticatedUser = await getAuthenticatedUser();
+  const authenticatedUser = await verifySession();
   const posts = await getPosts(authenticatedUser?.id);
   return <Posts posts={posts} />;
 };

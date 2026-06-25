@@ -1,9 +1,9 @@
 import { loadMoreUserFollowings } from "@/actions/user";
 import Loading from "@/app/loading";
-import { getAuthenticatedUser } from "@/lib/auth";
 import Container from "@/components/Container";
 import UsersInfiniteScroll from "@/components/user/UsersInfiniteScroll";
 import { getUserFollowings, getUserIdByUsername } from "@/db/user";
+import { verifySession } from "@/modules/auth/lib/session";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
@@ -12,7 +12,7 @@ const Wrapper = async ({
 }: {
   params: Promise<{ username: string }>;
 }) => {
-  const authenticatedUser = await getAuthenticatedUser();
+  const authenticatedUser = await verifySession();
   const { username } = await params;
   const userId = await getUserIdByUsername(username);
   if (!userId) notFound();

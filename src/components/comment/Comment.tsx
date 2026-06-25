@@ -6,7 +6,7 @@ import UserAvatar from "@/components/user/UserAvatar";
 import { getTextDirection } from "@/lib/utils";
 import CommentMoreDropdownMenu from "./CommentMoreDropdownMenu";
 import type { Dispatch, SetStateAction } from "react";
-import { AuthenticatedUser } from "@/lib/auth";
+import { SessionPayload } from "@/modules/auth/lib/session";
 
 const Comment = ({
   comment,
@@ -17,7 +17,7 @@ const Comment = ({
 }: {
   comment: Comment;
   getBy?: "post" | "author";
-  authenticatedUser: AuthenticatedUser | null;
+  authenticatedUser: SessionPayload | null;
   setComments?: Dispatch<SetStateAction<Comment[]>>;
   setStatus?: Dispatch<
     SetStateAction<{

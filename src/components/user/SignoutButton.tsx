@@ -7,10 +7,10 @@ import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/modules/auth/hooks/useAuth";
 
 const SignoutButton = () => {
-  const { fetchUser } = useAuth();
+  const { refreshUser } = useAuth();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -19,7 +19,7 @@ const SignoutButton = () => {
     try {
       const response = await axios.post("/api/auth/signout");
       toast(response.data.message as string);
-      fetchUser();
+      refreshUser();
       router.push("/");
       router.refresh();
     } catch (error) {

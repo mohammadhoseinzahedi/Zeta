@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { verifyJWT } from "@/lib/auth";
+import { decrypt } from "./modules/auth/lib/session";
 
 export default async function middleware(request: NextRequest) {
   const token = request.cookies.get("auth_token")?.value;
-  const verifiedToken = token ? await verifyJWT(token) : null;
+  const verifiedToken = token ? await decrypt(token) : null;
   const pathname = request.nextUrl.pathname;
 
   // Allow access to signin page
@@ -25,9 +25,5 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/signin",
-    "/posts/create",
-    "/posts/:path*/edit",
-  ],
+  matcher: ["/signin", "/posts/create", "/posts/:path*/edit"],
 };

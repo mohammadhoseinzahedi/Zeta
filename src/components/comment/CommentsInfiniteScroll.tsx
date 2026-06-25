@@ -8,7 +8,7 @@ import type { Comment as CommentType } from "@/db/comment";
 import Comment from "@/components/comment/Comment";
 import CommentForm from "@/components/comment/CommentForm";
 import useInfiniteScroll from "@/hooks/useInfiniteScroll";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/modules/auth/hooks/useAuth";
 
 type CommonProps = {
   initialComments?: CommentType[];

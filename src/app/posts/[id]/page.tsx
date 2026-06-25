@@ -7,8 +7,8 @@ import { Suspense } from "react";
 import CommentsInfiniteScroll from "@/components/comment/CommentsInfiniteScroll";
 import { getCommentsByPostId } from "@/db/comment";
 import { LoaderCircle } from "lucide-react";
-import { getAuthenticatedUser } from "@/lib/auth";
 import PostSkeleton from "@/components/post/PostSkeleton";
+import { verifySession } from "@/modules/auth/lib/session";
 
 const Comments = async ({ postId }: { postId: string }) => {
   const comments = await getCommentsByPostId(postId);
@@ -22,7 +22,7 @@ const Comments = async ({ postId }: { postId: string }) => {
 };
 
 const Wrapper = async ({ params }: { params: Promise<{ id: string }> }) => {
-  const authenticatedUser = await getAuthenticatedUser();
+  const authenticatedUser = await verifySession();
   const post = await getPost((await params).id, authenticatedUser?.id);
   if (!post) notFound();
   return (

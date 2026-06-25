@@ -2,28 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { SignInSchema } from "@/schema/auth";
-import { signJWT } from "@/lib/auth";
-import { User } from "@prisma/client";
-
-async function generateAuthToken(user: User) {
-  return await signJWT({
-    id: user.id,
-    username: user.username,
-    role: user.role,
-  });
-}
-
-function responseWithAuthCookie(response: NextResponse, token: string) {
-  response.cookies.set("auth_token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 60 * 60 * 2, // 2 hours
-    path: "/",
-  });
-
-  return response;
-}
+import { createSession } from "@/modules/auth/lib/session";
 
 export async function POST(request: Request) {
   try {
@@ -51,26 +30,20 @@ export async function POST(request: Request) {
         },
       });
 
-      const token = await generateAuthToken(user);
+      await createSession(user);
 
-      return responseWithAuthCookie(
-        NextResponse.json(
-          { message: "New Account logged in successfully" },
-          { status: 201 },
-        ),
-        token,
+      return NextResponse.json(
+        { message: "New Account signed up and logged in successfully" },
+        { status: 201 },
       );
     }
 
     if (user.password && (await bcrypt.compare(password, user.password))) {
-      const token = await generateAuthToken(user);
+      await createSession(user);
 
-      return responseWithAuthCookie(
-        NextResponse.json(
-          { message: "Logged in successfully" },
-          { status: 200 },
-        ),
-        token,
+      return NextResponse.json(
+        { message: "Logged in successfully" },
+        { status: 200 },
       );
     } else {
       return NextResponse.json(

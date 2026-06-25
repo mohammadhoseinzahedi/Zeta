@@ -1,5 +1,4 @@
 "use server";
-import { getAuthenticatedUser } from "@/lib/auth";
 import type { PostInputDb } from "@/schema/post";
 import {
   createPost as createPostDb,
@@ -10,7 +9,8 @@ import {
   getPost,
 } from "@/db/post";
 import { notFound, redirect, unauthorized } from "next/navigation";
-import { canUpdatePost } from "@/permissions/post";
+import { verifySession } from "@/modules/auth/lib/session";
+import { canCUD } from "@/modules/auth/lib/permissions";
 
 export type PostLoaderActionProps = {
   authorId?: string;
@@ -18,40 +18,40 @@ export type PostLoaderActionProps = {
 };
 
 export async function createPost(unSafeData: PostInputDb) {
-  const authenticatedUser = await getAuthenticatedUser();
+  const authenticatedUser = await verifySession();
   if (!authenticatedUser) unauthorized();
 
   await createPostDb(authenticatedUser.username, unSafeData);
 }
 
 export async function updatePost(postId: string, unSafeData: PostInputDb) {
-  const authenticatedUser = await getAuthenticatedUser();
+  const authenticatedUser = await verifySession();
   if (!authenticatedUser) unauthorized();
   const post = await getPost(postId);
   if (!post) notFound();
-  if (!canUpdatePost(authenticatedUser, post)) unauthorized();
+  if (!(canCUD(post.author.username, authenticatedUser))) unauthorized();
 
   await updatePostDb(postId, unSafeData);
 }
 
 export async function deletePost(postId: string) {
-  const authenticatedUser = await getAuthenticatedUser();
+  const authenticatedUser = await verifySession();
   if (!authenticatedUser) unauthorized();
   const post = await getPost(postId);
   if (!post) notFound();
-  if (!canUpdatePost(authenticatedUser, post)) unauthorized();
+  if (!canCUD(post.author.username, authenticatedUser)) unauthorized();
 
   await deletePostDb(postId);
 }
 
 export async function likePost(postId: string) {
-  const authenticatedUser = await getAuthenticatedUser();
+  const authenticatedUser = await verifySession();
   if (!authenticatedUser) redirect("/signin");
   await likePostDb(authenticatedUser.username, postId);
 }
 
 export async function unLikePost(postId: string) {
-  const authenticatedUser = await getAuthenticatedUser();
+  const authenticatedUser = await verifySession();
   if (!authenticatedUser) redirect("/signin");
   await unLikePostDb(authenticatedUser.username, postId);
 }

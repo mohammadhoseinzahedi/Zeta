@@ -6,10 +6,10 @@ import { House } from "lucide-react";
 import { Pencil } from "lucide-react";
 import { getUserByUsername } from "@/db/user";
 import UserAvatar from "./user/UserAvatar";
-import { getAuthenticatedUser } from "@/lib/auth";
+import { verifySession } from "@/modules/auth/lib/session";
 
 const MainHeader = async () => {
-  const authenticatedUser = await getAuthenticatedUser();
+  const authenticatedUser = await verifySession();
   const user =
     authenticatedUser &&
     (await getUserByUsername(

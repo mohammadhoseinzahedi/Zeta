@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LoaderIcon } from "lucide-react";
-import { useAuth } from "@/modules/auth/hooks/useAuth";
+import { useAuth } from "../hooks/useAuth";
 
 const SignInForm = () => {
   const { refreshUser } = useAuth();

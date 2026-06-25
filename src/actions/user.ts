@@ -1,7 +1,5 @@
 "use server";
-import { getAuthenticatedUser } from "@/lib/auth";
 import { redirect, unauthorized } from "next/navigation";
-import { canUpdateUser } from "@/permissions/user";
 import {
   followUser as followUserDb,
   unFollowUser as unFollowUserDb,
@@ -11,6 +9,8 @@ import {
   getUserFollowings,
 } from "@/db/user";
 import { UserInputDbType } from "@/schema/user";
+import { verifySession } from "@/modules/auth/lib/session";
+import { canCUD } from "@/modules/auth/lib/permissions";
 
 export type UserLoaderActionProps = {
   userId?: string;
@@ -21,7 +21,7 @@ export async function loadMoreUserFollowers(
   { userId }: UserLoaderActionProps,
 ) {
   if (!userId) throw new Error("User ID is required");
-  const authenticatedUser = await getAuthenticatedUser();
+  const authenticatedUser = await verifySession();
   if (!authenticatedUser) return redirect("/signin");
   return await getUserFollowers(userId, authenticatedUser.id, page);
 }
@@ -31,19 +31,19 @@ export async function loadMoreUserFollowings(
   { userId }: UserLoaderActionProps,
 ) {
   if (!userId) throw new Error("User ID is required");
-  const authenticatedUser = await getAuthenticatedUser();
+  const authenticatedUser = await verifySession();
   if (!authenticatedUser) return redirect("/signin");
   return await getUserFollowings(userId, authenticatedUser.id, page);
 }
 
 export async function isFollowingUser(username: string) {
-  const authenticatedUser = await getAuthenticatedUser();
+  const authenticatedUser = await verifySession();
   if (!authenticatedUser) return false;
   return await isFollowingUserDb(username, authenticatedUser.username);
 }
 
 export async function followUser(username: string) {
-  const authenticatedUser = await getAuthenticatedUser();
+  const authenticatedUser = await verifySession();
   if (!authenticatedUser) redirect("/signin");
   if (authenticatedUser.username === username)
     redirect(`/users/${username}/edit`);
@@ -51,7 +51,7 @@ export async function followUser(username: string) {
 }
 
 export async function unFollowUser(username: string) {
-  const authenticatedUser = await getAuthenticatedUser();
+  const authenticatedUser = await verifySession();
   if (!authenticatedUser) redirect("/signin");
   if (authenticatedUser.username === username)
     redirect(`/users/${username}/edit`);
@@ -62,9 +62,7 @@ export async function updateUser(
   unSafeData: UserInputDbType,
   username: string,
 ) {
-  const authenticatedUser = await getAuthenticatedUser();
-  if (!authenticatedUser || !canUpdateUser(authenticatedUser, username))
-    unauthorized();
+  if (!canCUD(username, await verifySession())) unauthorized();
 
   await updateUserDb(username, unSafeData);
 }
