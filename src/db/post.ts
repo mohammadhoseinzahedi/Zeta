@@ -1,5 +1,6 @@
-import { PostInputDbSchema, PostInputDb } from "@/schema/post";
 import { prisma } from "@/lib/prisma";
+import { postSelect, mapPost } from "@/db/selects";
+import type { PostInputDb } from "@/schema/post";
 
 export type Post = {
   id: string;
@@ -25,129 +26,18 @@ export async function getPost(
 ): Promise<Post | null> {
   const post = await prisma.post.findUnique({
     where: { id: postId },
-    select: {
-      id: true,
-      content: true,
-      image: true,
-      likes: {
-        where: { id: authenticatedUserId },
-        select: {
-          username: true,
-        },
-      },
-      author: {
-        select: {
-          id: true,
-          username: true,
-          name: true,
-          image: true,
-          followedBy: {
-            where: {
-              id: authenticatedUserId,
-            },
-            select: {
-              username: true,
-            },
-          },
-        },
-      },
-      createdAt: true,
-      updatedAt: true,
-      _count: {
-        select: {
-          likes: true,
-          comments: true,
-        },
-      },
-    },
+    select: postSelect(authenticatedUserId),
   });
-
-  return (
-    post && {
-      id: post.id,
-      content: post.content,
-      image: post.image,
-      author: {
-        username: post.author.username,
-        name: post.author.name,
-        image: post.author.image,
-        isFollowedByAuthenticatedUser: authenticatedUserId
-          ? post.author.followedBy.length > 0
-          : false,
-        isAuthenticatedUser: post.author.id === authenticatedUserId,
-      },
-      isLikedByAuthenticatedUser: authenticatedUserId
-        ? post.likes.length > 0
-        : false,
-      createdAt: post.createdAt,
-      updatedAt: post.updatedAt,
-      likesCount: post._count.likes,
-      commentsCount: post._count.comments,
-    }
-  );
+  return post ? mapPost(post, authenticatedUserId) : null;
 }
 
 export async function getPosts(authenticatedUserId?: string): Promise<Post[]> {
   const posts = await prisma.post.findMany({
     where: {},
-    select: {
-      id: true,
-      content: true,
-      image: true,
-      likes: {
-        where: { id: authenticatedUserId },
-        select: {
-          username: true,
-        },
-      },
-      author: {
-        select: {
-          id: true,
-          username: true,
-          name: true,
-          image: true,
-          followedBy: {
-            where: {
-              id: authenticatedUserId,
-            },
-            select: {
-              username: true,
-            },
-          },
-        },
-      },
-      createdAt: true,
-      updatedAt: true,
-      _count: {
-        select: {
-          likes: true,
-          comments: true,
-        },
-      },
-    },
+    select: postSelect(authenticatedUserId),
     orderBy: { createdAt: "desc" },
   });
-  return posts.map((post) => ({
-    id: post.id,
-    content: post.content,
-    image: post.image,
-    author: {
-      username: post.author.username,
-      name: post.author.name,
-      image: post.author.image,
-      isFollowedByAuthenticatedUser: authenticatedUserId
-        ? post.author.followedBy.length > 0
-        : false,
-      isAuthenticatedUser: post.author.id === authenticatedUserId,
-    },
-    isLikedByAuthenticatedUser: authenticatedUserId
-      ? post.likes.length > 0
-      : false,
-    createdAt: post.createdAt,
-    updatedAt: post.updatedAt,
-    likesCount: post._count.likes,
-    commentsCount: post._count.comments,
-  }));
+  return posts.map((post) => mapPost(post, authenticatedUserId));
 }
 
 export async function getUserPosts(
@@ -156,65 +46,10 @@ export async function getUserPosts(
 ): Promise<Post[]> {
   const posts = await prisma.post.findMany({
     where: { authorId },
-    select: {
-      id: true,
-      content: true,
-      image: true,
-      likes: {
-        where: { id: authenticatedUserId },
-        select: {
-          username: true,
-        },
-      },
-      author: {
-        select: {
-          id: true,
-          username: true,
-          name: true,
-          image: true,
-          followedBy: {
-            where: {
-              id: authenticatedUserId,
-            },
-            select: {
-              username: true,
-            },
-          },
-        },
-      },
-      createdAt: true,
-      updatedAt: true,
-      _count: {
-        select: {
-          likes: true,
-          comments: true,
-        },
-      },
-    },
+    select: postSelect(authenticatedUserId),
     orderBy: { createdAt: "desc" },
   });
-
-  return posts.map((post) => ({
-    id: post.id,
-    content: post.content,
-    image: post.image,
-    author: {
-      username: post.author.username,
-      name: post.author.name,
-      image: post.author.image,
-      isFollowedByAuthenticatedUser: authenticatedUserId
-        ? post.author.followedBy.length > 0
-        : false,
-      isAuthenticatedUser: post.author.id === authenticatedUserId,
-    },
-    isLikedByAuthenticatedUser: authenticatedUserId
-      ? post.likes.length > 0
-      : false,
-    createdAt: post.createdAt,
-    updatedAt: post.updatedAt,
-    likesCount: post._count.likes,
-    commentsCount: post._count.comments,
-  }));
+  return posts.map((post) => mapPost(post, authenticatedUserId));
 }
 
 export async function getUserFollowingsPosts(
@@ -222,96 +57,35 @@ export async function getUserFollowingsPosts(
 ): Promise<Post[]> {
   const posts = await prisma.post.findMany({
     where: { author: { followedBy: { some: { id: authenticatedUserId } } } },
-    select: {
-      id: true,
-      content: true,
-      image: true,
-      likes: {
-        where: { id: authenticatedUserId },
-        select: {
-          username: true,
-        },
-      },
-      author: {
-        select: {
-          id: true,
-          username: true,
-          name: true,
-          image: true,
-          followedBy: {
-            where: {
-              id: authenticatedUserId,
-            },
-            select: {
-              username: true,
-            },
-          },
-        },
-      },
-      createdAt: true,
-      updatedAt: true,
-      _count: {
-        select: {
-          likes: true,
-          comments: true,
-        },
-      },
-    },
+    select: postSelect(authenticatedUserId),
     orderBy: { createdAt: "desc" },
   });
-
-  return posts.map((post) => ({
-    id: post.id,
-    content: post.content,
-    image: post.image,
-    author: {
-      username: post.author.username,
-      name: post.author.name,
-      image: post.author.image,
-      isFollowedByAuthenticatedUser: authenticatedUserId
-        ? post.author.followedBy.length > 0
-        : false,
-      isAuthenticatedUser: post.author.id === authenticatedUserId,
-    },
-    isLikedByAuthenticatedUser: authenticatedUserId
-      ? post.likes.length > 0
-      : false,
-    createdAt: post.createdAt,
-    updatedAt: post.updatedAt,
-    likesCount: post._count.likes,
-    commentsCount: post._count.comments,
-  }));
+  return posts.map((post) => mapPost(post, authenticatedUserId));
 }
 
 export async function createPost(
   username: string,
-  unSafeData: PostInputDb,
+  data: PostInputDb,
 ): Promise<void> {
-  const data = await PostInputDbSchema.parseAsync(unSafeData);
   await prisma.post.create({
     data: {
       ...data,
-      author: {
-        connect: {
-          username,
-        },
-      },
+      author: { connect: { username } },
     },
   });
 }
 
 export async function updatePost(
   id: string,
-  unSafeData: PostInputDb,
+  data: PostInputDb,
 ): Promise<void> {
-  const data = await PostInputDbSchema.parseAsync(unSafeData);
   await prisma.post.update({
     where: { id },
     data,
   });
 }
 
-export async function deletePost(postId: string) {
+export async function deletePost(postId: string): Promise<void> {
   await prisma.post.delete({
     where: { id: postId },
   });
@@ -324,11 +98,7 @@ export async function likePost(
   await prisma.post.update({
     where: { id: postId },
     data: {
-      likes: {
-        connect: {
-          username,
-        },
-      },
+      likes: { connect: { username } },
     },
   });
 }
@@ -340,11 +110,7 @@ export async function unLikePost(
   await prisma.post.update({
     where: { id: postId },
     data: {
-      likes: {
-        disconnect: {
-          username,
-        },
-      },
+      likes: { disconnect: { username } },
     },
   });
 }

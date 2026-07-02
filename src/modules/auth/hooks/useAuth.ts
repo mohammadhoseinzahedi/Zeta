@@ -29,7 +29,7 @@ export function useAuth() {
 
   return {
     user: user ?? null,
-    loading: isLoading,
+    isLoading,
     error,
     refreshUser: refetch,
   };

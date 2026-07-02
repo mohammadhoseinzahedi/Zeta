@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
-import { UserInputDbSchema, UserInputDbType } from "@/schema/user";
+import { userBasicSelect, userDetailSelect } from "@/db/selects";
+import { pagination } from "@/db/utils";
+import type { UserInputDbType } from "@/schema/user";
 
 export type UserBasic = {
   username: string;
@@ -8,89 +10,60 @@ export type UserBasic = {
   isAuthenticatedUser: boolean;
   isFollowedByAuthenticatedUser: boolean;
 };
+
 export type User = NonNullable<Awaited<ReturnType<typeof getUserByUsername>>>;
 
 export async function getUserByUsername(
   username: string,
-  authenticatedUserId: string | undefined
+  authenticatedUserId: string | undefined,
 ) {
   const user = await prisma.user.findUnique({
     where: { username },
     select: {
-      id: true,
-      name: true,
-      username: true,
-      bio: true,
-      image: true,
+      ...userDetailSelect,
       followedBy: {
-        where: {
-          id: authenticatedUserId,
-        },
-        select: {
-          username: true,
-        },
-      },
-      createdAt: true,
-      _count: {
-        select: {
-          posts: true,
-          followedBy: true,
-          following: true,
-        },
+        where: { id: authenticatedUserId ?? "" },
+        select: { username: true },
       },
     },
   });
 
-  return (
-    user &&
-    (() => {
-      const { followedBy, ...rest } = user; // Destructure `followedBy` to exclude it
-      return {
-        ...rest,
-        isFollowedByAuthenticatedUser: authenticatedUserId
-          ? followedBy.length > 0
-          : false,
-        isAuthenticatedUser: user.id === authenticatedUserId, // Check if the user is the authenticated user
-      };
-    })()
-  );
+  if (!user) return null;
+
+  const { followedBy, ...rest } = user;
+  return {
+    ...rest,
+    isFollowedByAuthenticatedUser: authenticatedUserId
+      ? followedBy.length > 0
+      : false,
+    isAuthenticatedUser: user.id === authenticatedUserId,
+  };
 }
 
 export async function getUserIdByUsername(username: string) {
   const user = await prisma.user.findUnique({
     where: { username },
-    select: {
-      id: true,
-    },
+    select: { id: true },
   });
-
-  return user && user.id;
+  return user?.id ?? null;
 }
 
 export async function getUserFollowers(
   userId: string,
   authenticatedUserId: string | undefined,
   page: number = 1,
-  limit: number = 20
+  limit: number = 20,
 ) {
-  const take = limit;
-  const skip = take * (page - 1);
+  const { take, skip } = pagination(page, limit);
   const users = await prisma.user.findMany({
     skip,
     take,
     where: { following: { some: { id: userId } } },
     select: {
-      id: true,
-      name: true,
-      username: true,
-      image: true,
+      ...userBasicSelect,
       followedBy: {
-        where: {
-          id: authenticatedUserId,
-        },
-        select: {
-          username: true,
-        },
+        where: { id: authenticatedUserId ?? "" },
+        select: { username: true },
       },
     },
   });
@@ -109,31 +82,21 @@ export async function getUserFollowings(
   userId: string,
   authenticatedUserId: string | undefined,
   page: number = 1,
-  limit: number = 20
+  limit: number = 20,
 ) {
-  const take = limit;
-  const skip = take * (page - 1);
-
+  const { take, skip } = pagination(page, limit);
   const users = await prisma.user.findMany({
     skip,
     take,
     where: { followedBy: { some: { id: userId } } },
     select: {
-      id: true,
-      name: true,
-      username: true,
-      image: true,
+      ...userBasicSelect,
       followedBy: {
-        where: {
-          id: authenticatedUserId, // Filter by authenticatedUserId
-        },
-        select: {
-          username: true, // Select the ID to check if the user is followed
-        },
+        where: { id: authenticatedUserId ?? "" },
+        select: { username: true },
       },
     },
   });
-
   return users.map((user) => ({
     username: user.username,
     name: user.name,
@@ -158,37 +121,28 @@ export async function isFollowingUser(following: string, followedBy: string) {
 }
 
 export async function followUser(following: string, followedBy: string) {
-  return await prisma.user.update({
+  await prisma.user.update({
     where: { username: following },
     data: {
-      followedBy: {
-        connect: {
-          username: followedBy,
-        },
-      },
+      followedBy: { connect: { username: followedBy } },
     },
   });
 }
 
 export async function unFollowUser(following: string, followedBy: string) {
-  return await prisma.user.update({
+  await prisma.user.update({
     where: { username: following },
     data: {
-      followedBy: {
-        disconnect: {
-          username: followedBy,
-        },
-      },
+      followedBy: { disconnect: { username: followedBy } },
     },
   });
 }
 
 export async function updateUser(
   username: string,
-  unSafeData: UserInputDbType
+  data: UserInputDbType,
 ) {
-  const data = await UserInputDbSchema.parseAsync(unSafeData);
-  return await prisma.user.update({
+  await prisma.user.update({
     where: { username },
     data,
   });

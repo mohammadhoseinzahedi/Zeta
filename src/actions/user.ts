@@ -8,7 +8,7 @@ import {
   getUserFollowers,
   getUserFollowings,
 } from "@/db/user";
-import { UserInputDbType } from "@/schema/user";
+import { UserInputDbSchema, UserInputDbType } from "@/schema/user";
 import { verifySession } from "@/modules/auth/lib/session";
 import { canCUD } from "@/modules/auth/lib/permissions";
 
@@ -63,6 +63,7 @@ export async function updateUser(
   username: string,
 ) {
   if (!canCUD(username, await verifySession())) unauthorized();
+  const data = await UserInputDbSchema.parseAsync(unSafeData);
 
-  await updateUserDb(username, unSafeData);
+  await updateUserDb(username, data);
 }

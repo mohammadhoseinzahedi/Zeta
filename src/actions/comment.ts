@@ -4,7 +4,7 @@ import {
   getCommentsByAuthorId,
   getCommentsByPostId,
 } from "@/db/comment";
-import { CommentInputDb } from "@/schema/comment";
+import { CommentInputDb, CommentInputDbSchema } from "@/schema/comment";
 import { notFound, redirect, unauthorized } from "next/navigation";
 import {
   createComment as createCommentDb,
@@ -42,7 +42,8 @@ export async function createComment(
 ) {
   const authenticatedUser = await verifySession();
   if (!authenticatedUser) redirect("/signin");
-  return await createCommentDb(authenticatedUser.username, postId, unSafeData);
+  const data = await CommentInputDbSchema.parseAsync(unSafeData);
+  return await createCommentDb(authenticatedUser.username, postId, data);
 }
 
 export async function updateComment(id: string, unSafeData: CommentInputDb) {
@@ -51,7 +52,8 @@ export async function updateComment(id: string, unSafeData: CommentInputDb) {
   const comment = await getComment(id);
   if (!comment) notFound();
   if (!canCUD(comment.author.username, authenticatedUser)) unauthorized();
-  await updateCommentDb(id, unSafeData);
+  const data = await CommentInputDbSchema.parseAsync(unSafeData);
+  await updateCommentDb(id, data);
 }
 
 export async function deleteComment(id: string) {

@@ -1,5 +1,7 @@
-import { CommentInputDbSchema, CommentInputDb } from "@/schema/comment";
 import { prisma } from "@/lib/prisma";
+import { commentWithAuthorSelect } from "@/db/selects";
+import { pagination } from "@/db/utils";
+import type { CommentInputDb } from "@/schema/comment";
 
 export type Comment = {
   id: string;
@@ -17,24 +19,8 @@ export type Comment = {
 
 export async function getComment(id: string): Promise<Comment | null> {
   return await prisma.comment.findUnique({
-    where: {
-      id,
-    },
-    select: {
-      id: true,
-      postId: true,
-      authorId: true,
-      content: true,
-      author: {
-        select: {
-          username: true,
-          name: true,
-          image: true,
-        },
-      },
-      createdAt: true,
-      updatedAt: true,
-    },
+    where: { id },
+    select: commentWithAuthorSelect,
   });
 }
 
@@ -43,29 +29,12 @@ export async function getCommentsByAuthorId(
   page: number = 1,
   limit: number = 10
 ): Promise<Comment[]> {
-  const take = limit;
-  const skip = take * (page - 1);
+  const { take, skip } = pagination(page, limit);
   return await prisma.comment.findMany({
     skip,
     take,
-    where: {
-      authorId,
-    },
-    select: {
-      id: true,
-      postId: true,
-      authorId: true,
-      content: true,
-      author: {
-        select: {
-          username: true,
-          name: true,
-          image: true,
-        },
-      },
-      createdAt: true,
-      updatedAt: true,
-    },
+    where: { authorId },
+    select: commentWithAuthorSelect,
     orderBy: { createdAt: "desc" },
   });
 }
@@ -75,29 +44,12 @@ export async function getCommentsByPostId(
   page: number = 1,
   limit: number = 10
 ): Promise<Comment[]> {
-  const take = limit;
-  const skip = take * (page - 1);
+  const { take, skip } = pagination(page, limit);
   return await prisma.comment.findMany({
     skip,
     take,
-    where: {
-      postId,
-    },
-    select: {
-      id: true,
-      postId: true,
-      authorId: true,
-      content: true,
-      author: {
-        select: {
-          username: true,
-          name: true,
-          image: true,
-        },
-      },
-      createdAt: true,
-      updatedAt: true,
-    },
+    where: { postId },
+    select: commentWithAuthorSelect,
     orderBy: { createdAt: "desc" },
   });
 }
@@ -105,64 +57,26 @@ export async function getCommentsByPostId(
 export async function createComment(
   username: string,
   postId: string,
-  unSafeData: CommentInputDb
+  data: CommentInputDb
 ): Promise<Comment> {
-  const data = await CommentInputDbSchema.parseAsync(unSafeData);
   return await prisma.comment.create({
     data: {
       ...data,
-      author: {
-        connect: {
-          username,
-        },
-      },
-      post: {
-        connect: {
-          id: postId,
-        },
-      },
+      author: { connect: { username } },
+      post: { connect: { id: postId } },
     },
-    select: {
-      id: true,
-      postId: true,
-      authorId: true,
-      content: true,
-      author: {
-        select: {
-          username: true,
-          name: true,
-          image: true,
-        },
-      },
-      createdAt: true,
-      updatedAt: true,
-    },
+    select: commentWithAuthorSelect,
   });
 }
 
 export async function updateComment(
   id: string,
-  unSafeData: CommentInputDb
+  data: CommentInputDb
 ): Promise<Comment> {
-  const data = await CommentInputDbSchema.parseAsync(unSafeData);
   return await prisma.comment.update({
     where: { id },
     data,
-    select: {
-      id: true,
-      postId: true,
-      authorId: true,
-      content: true,
-      author: {
-        select: {
-          username: true,
-          name: true,
-          image: true,
-        },
-      },
-      createdAt: true,
-      updatedAt: true,
-    },
+    select: commentWithAuthorSelect,
   });
 }
 

@@ -1,4 +1,5 @@
 "use server";
+import { PostInputDbSchema } from "@/schema/post";
 import type { PostInputDb } from "@/schema/post";
 import {
   createPost as createPostDb,
@@ -12,16 +13,12 @@ import { notFound, redirect, unauthorized } from "next/navigation";
 import { verifySession } from "@/modules/auth/lib/session";
 import { canCUD } from "@/modules/auth/lib/permissions";
 
-export type PostLoaderActionProps = {
-  authorId?: string;
-  getBy?: "following" | "author";
-};
-
 export async function createPost(unSafeData: PostInputDb) {
   const authenticatedUser = await verifySession();
   if (!authenticatedUser) unauthorized();
+  const data = await PostInputDbSchema.parseAsync(unSafeData);
 
-  await createPostDb(authenticatedUser.username, unSafeData);
+  await createPostDb(authenticatedUser.username, data);
 }
 
 export async function updatePost(postId: string, unSafeData: PostInputDb) {
@@ -29,9 +26,10 @@ export async function updatePost(postId: string, unSafeData: PostInputDb) {
   if (!authenticatedUser) unauthorized();
   const post = await getPost(postId);
   if (!post) notFound();
-  if (!(canCUD(post.author.username, authenticatedUser))) unauthorized();
+  if (!canCUD(post.author.username, authenticatedUser)) unauthorized();
+  const data = await PostInputDbSchema.parseAsync(unSafeData);
 
-  await updatePostDb(postId, unSafeData);
+  await updatePostDb(postId, data);
 }
 
 export async function deletePost(postId: string) {
